@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./vars.css">
+  <link rel="stylesheet" href="./style.css">
+  
+  <style>
+   a,
+   button,
+   input,
+   select,
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   * {
+       box-sizing: border-box;
+       margin: 0;
+       padding: 0;
+       border: none;
+       text-decoration: none;
+       background: none;
+   
+       -webkit-font-smoothing: antialiased;
+   }
+   
+   menu, ol, ul {
+       list-style-type: none;
+       margin: 0;
+       padding: 0;
+   }
+
+   .dropdown-date  {
+     width: 400px;
+     border: 1px solid #ccc;
+     left: 700px;
+     top: 53px;
+     position: relative;
+     cursor: pointer;
+     margin-left: 10px;
+     display: inline-block;
+   }
+
+   .dropdown-guests{
+     width: 350px;
+     border: 1px solid #ccc;
+     left: 650px;
+     top: 53px;
+     position: relative;
+     cursor: pointer;
+     margin-left: 10px;
+     display: inline-block;
+   }
+
+   .dropdown-header {
+     padding: 20px;
+     background: #fff;
+   }
+
+   .dropdown-menu {
+     display: none;
+     position: absolute;
+     top: 100%;
+     left: 0;
+     width: 120%;
+     background: #fff;
+     border: 1px solid #ccc;
+     z-index: 10;
+     max-height: 200px;
+     overflow-y: auto;
+   }
+
+   .date-picker {
+     width: 300px;
+     max-height: none;
+   }
+
+   .calendar-container {
+     padding: 15px;
+   }
+
+   .month-selector {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 10px;
+   }
+
+   .month-selector button {
+     background: #f0f0f0;
+     border: none;
+     padding: 5px 10px;
+     cursor: pointer;
+     border-radius: 3px;
+   }
+
+   .calendar {
+     display: grid;
+     grid-template-columns: repeat(7, 1fr);
+     gap: 5px;
+   }
+
+   .calendar div {
+     padding: 8px;
+     text-align: center;
+     cursor: pointer;
+     border-radius: 3px;
+   }
+
+   .calendar div:hover {
+     background: #f0f0f0;
+   }
+
+   .calendar .selected {
+     background: #e4002b;
+     color: white;
+   }
+
+   .selected-dates {
+     margin: 10px 0;
+     padding: 10px;
+     background: #f9f9f9;
+     border-radius: 5px;
+   }
+
+   .confirm-btn {
+     width: 100%;
+     padding: 10px;
+     background: #e4002b;
+     color: white;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+   }
+
+   /* Стили для выбора гостей */
+   .guests-picker {
+     width: 250px;
+     max-height: none;
+   }
+
+   .guests-control {
+     padding: 15px;
+   }
+
+   .guest-type {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 15px;
+   }
+
+   .counter {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+   }
+
+   .counter-btn {
+     width: 30px;
+     height: 30px;
+     background: #f0f0f0;
+     border: none;
+     border-radius: 50%;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
+
+   .counter-btn:disabled {
+     opacity: 0.5;
+     cursor: not-allowed;
+   }
+
+   .children-control {
+     margin-top: 10px;
+     padding: 10px;
+     background: #f9f9f9;
+     border-radius: 5px;
+   }
+
+   .children-control.hidden {
+     display: none;
+   }
+
+   .children-slider {
+     width: 100%;
+     margin: 10px 0;
+   }
+
+   .tabs {
+     display: flex;
+     justify-content: space-around;
+     border-bottom: 1px solid #ccc;
+   }
+
+   .tab-button {
+     flex: 1;
+     padding: 10px;
+     background: #f9f9f9;
+     border: none;
+     cursor: pointer;
+   }
+
+   .tab-button.active {
+     background: #fff;
+     font-weight: bold;
+   }
+
+   .tab-content {
+     padding: 10px;
+   }
+
+   .menu-item {
+     padding: 10px;
+     border-bottom: 1px solid #ccc;
+     cursor: pointer;
+   }
+
+   .menu-item:hover {
+     background: #f1f1f1;
+   }
+
+   .hidden {
+     display: none;
+   }
+
+   .personal-cabinet {
+     position: absolute;
+     right: 20px;
+     top: 20px;
+     z-index: 1000;
+   }
+
+   .personal-cabinet-btn {
+     background: #e4002b;
+     color: white;
+     padding: 10px 20px;
+     border-radius: 5px;
+     cursor: pointer;
+     font-size: 14px;
+   }
+  </style>
+  <title>Главная</title>
+</head>
+<body>
+  <div class="div">
+    <!-- Кнопка личного кабинета -->
+    <div class="personal-cabinet">
+      <a href="./ЛК(П)/index.html" class="personal-cabinet-btn">Личный кабинет</a>
+    </div>
+
+    <div class="component-1">
+      <img
+        class="the-peninsula-hong-kong-night-view-2006-1"
+        src="the-peninsula-hong-kong-night-view-2006-10.png"
+      />
+      <img class="icons-8-30-1-1" src="icons-8-30-1-10.png" />
+      <svg
+        class="rectangle-8"
+        width="448"
+        height="60"
+        viewBox="0 0 448 60"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M0 0H448V60H0V0Z" fill="white" />
+      </svg>
+      <a href="./Оплата/booking.html">
+      <div class="rectangle-11">Проверить цены</div>
+      </a>
+      <div class="div2">Выберите отель или санаторий</div>
+      <img class="icons-8-30-1" src="icons-8-30-10.png" />
+    
+
+
+      <!-- Выбор отеля -->
+      <div class="dropdown">
+        <div id="dropdownHeader" class="dropdown-header">Выберите отель или санаторий</div>
+        <div id="dropdownMenu" class="dropdown-menu">
+          <div class="tabs">
+            <button class="tab-button active" onclick="showTab('hotels')">Отели</button>
+            <button class="tab-button" onclick="showTab('resorts')">Санатории</button>
+          </div>
+          <div id="hotels" class="tab-content">
+            <div class="menu-item" onclick="selectItem('Москва')">МОСКВА</div>
+            <div class="menu-item" onclick="selectItem('САНКТ-ПЕТЕРБУРГ')">САНКТ-ПЕТЕРБУРГ</div>
+            <div class="menu-item" onclick="selectItem('АБАКАН')">АБАКАН</div>
+            <div class="menu-item" onclick="selectItem('АСТРАХАНЬ')">АСТРАХАНЬ</div>
+          </div>
+          <div id="resorts" class="tab-content hidden">
+            <div class="menu-item" onclick="selectItem('Геленджик')">ГЕЛЕНДЖИК</div>
+            <div class="menu-item" onclick="selectItem('Сочи')">СОЧИ</div>
+            <div class="menu-item" onclick="selectItem('Анапа')">АНАПА</div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="dropdown-date">
+        <div id="dateDropdownHeader" class="dropdown-header">Заезд-Выезд</div>
+        <div id="dateDropdownMenu" class="dropdown-menu date-picker">
+          <div class="calendar-container">
+            <div class="month-selector">
+              <button id="prevMonth">‹</button>
+              <span id="currentMonth"></span>
+              <button id="nextMonth">›</button>
+            </div>
+            <div id="calendar" class="calendar"></div>
+            <div class="selected-dates">
+              <div>Заезд: <span id="checkinDate"></span></div>
+              <div>Выезд: <span id="checkoutDate"></span></div>
+            </div>
+            <button id="confirmDates" class="confirm-btn">Подтвердить</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Выбор количества гостей -->
+      <div class="dropdown-guests">
+        <div id="guestsDropdownHeader" class="dropdown-header">1 Гость</div>
+        <div id="guestsDropdownMenu" class="dropdown-menu guests-picker">
+          <div class="guests-control">
+            <div class="guest-type">
+              <span>Взрослые</span>
+              <div class="counter">
+                <button class="counter-btn" data-type="adults" data-action="decrease">-</button>
+                <span class="count" data-type="adults">1</span>
+                <button class="counter-btn" data-type="adults" data-action="increase">+</button>
+              </div>
+            </div>
+            <div class="guest-type">
+              <span>Дети</span>
+              <div class="counter">
+                <button class="counter-btn" data-type="children" data-action="decrease" disabled>-</button>
+                <span class="count" data-type="children">0</span>
+                <button class="counter-btn" data-type="children" data-action="increase">+</button>
+              </div>
+            </div>
+            <div id="childrenControl" class="children-control hidden">
+              <div>Количество детей: <span id="childrenCount">0</span></div>
+              <input type="range" id="childrenSlider" class="children-slider" min="0" max="11" value="0">
+              <div></div>
+            </div>
+            <button id="confirmGuests" class="confirm-btn">Подтвердить</button>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="paradise-hotels">Paradise HOTELS</div>
+      <div class="div5">Отели и санатории</div>
+      
+      <div class="div16" id="spec">Специальные предложения</div>
+      <a href="#spec">
+      <div class="div6">Спецпредложения</div>
+    </a>
+
+  <a href="#konta">
+    <div class="div8">Контакты</div>
+  </a>
+      <a href="./Регистрация/index.html">
+      <img class="icons-8-96-1" src="icons-8-96-10.png" />
+      <div class="div9">Войти</div>
+    </a>
+    <a href="./Оплата/booking.html">
+      <div class="div10">Бронирования</div>
+      </a>  
+      <div class="paradise-hotels-100">
+        Paradise HOTELS - крупнейшая российская сеть отелей с широкой географией
+        присутствия по всей России. 100% гарантия лучшей цены при бронировании на
+        официальном сайте.
+      </div>
+      <div class="_10-1-31-2024">
+        Скидка 10% с 1 по 31 октября 2024г на все медицинские программы!
+      </div>
+      <div class="ru">RU</div>
+      <div class="div11">Меню</div>
+      <img class="icons-8-100-1" src="icons-8-100-10.png" />
+      <div class="div12">Удобное расположение отелей по всей России</div>
+      <div class="wi-fi">Бесплатный Wi-Fi на всей территории отелей.</div>
+      <div class="div13">
+        Бронируйте на официальном сайте и получайте гарантированно лучшие цены.
+      </div>
+      <a href="Водичка/index.html">
+      <div class="ellipse-1"></div>
+      <img class="_12" src="_11.png" /></a>
+      <div class="div14">
+        Вода на любой вкус
+        <br />
+        и цвет
+      </div>
+
+      <div class="ellipse-2"></div>
+      <div class="ellipse-3"></div>
+      <div class="ellipse-4"></div>
+      <div class="ellipse-5"></div>
+      <img class="pngwing-com-1" src="pngwing-com-10.png" />
+      <div class="div15">Комфорт и качество</div>
+      <img class="icons-8-100-12" src="icons-8-100-11.png" />
+      <img class="icons-8-64-1" src="icons-8-64-10.png" />
+      <div class="icons-8-96-12"></div>
+      <img class="icons-8-100-13" src="icons-8-100-12.png" />
+      <img class="icons-8-64-12" src="icons-8-64-11.png" />
+      <img class="_0124-1" src="_0124-10.png" />
+      <img class="image-24" src="image-240.png" />
+      <img class="antistress-1" src="antistress-10.png" />
+
+
+      <div class="div7">Мероприятия</div>
+      <div class="div17" id="mero">Мероприятия</div>
+      <a href="#mero">
+      <div class="div7">Мероприятия</div>
+    </a>
+
+    
+      
+<a href="./Спецпредложения/index.html">
+      <div class="div18">Все спецпредложения</div>
+      </a>
+
+      <div class="paradise-hotels2">
+        Paradise Hotels - крупнейшая площадка для мероприятий. Команда
+        профессионалов, новейшее оборудование и великолепный банкетный сервис. Мы
+        сделаем всё, чтобы ваше мероприятие прошло успешно!
+      </div>
+      <div class="div19">Арендуйте зал для вашего мероприятия</div>
+      <div class="paradise">
+        Осень на берегу Чёрного моря в Paradise Здоровье...
+      </div>
+      <div class="paradise2">
+        Скидка на длительное проживание в Paradise Здоровье Долина Нарзанов
+        Кисловодск во всех категориях номеров
+      </div>
+      <div class="div20">Живите дольше - платите меньше!</div>
+      <div class="paradise3">Свадьба в Paradise Здоровье Зелёный Гай</div>
+      <div class="rectangle-12"></div>
+      <div class="rectangle-13"></div>
+      <svg
+        class="rectangle-14"
+        width="243"
+        height="63"
+        viewBox="0 0 243 63"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d="M0.5 0.5H242.5V62.5H0.5V0.5Z" fill="white" stroke="black" />
+      </svg>
+      <div class="paradise4">
+        Свадьба в Paradise Здоровье Зелёный Гай - подарите себе незабываемое
+        торжество!
+      </div>
+
+      <div class="div21">Узнать больше...</div>
+      <div class="div22">Узнать больше...</div>
+      <div class="div23">Узнать больше...</div>
+
+    <a href="./index.html">
+      <img
+        class="_79774-ea-0-51-ee-4-e-9-d-8992-2-f-8-caf-377628-transformed-1"
+        src="_79774-ea-0-51-ee-4-e-9-d-8992-2-f-8-caf-377628-transformed-10.png"
+      /></a>
+
+          <div class="paradise6">Самые популярные отели и санатории Paradise</div>
+
+
+
+      <img class="_1-1" src="_1-10.png" alt="Мероприятие 1"/>
+    <img class="image-25" src="image-250.png" alt="Мероприятие 2"/>
+    <img class="image-26" src="image-260.png" alt="Мероприятие 3"/>
+
+<a href="./Оплата/booking.html">
+    <div class="div86">Уфа</div>
+    <div class="div87">Москва</div>
+    <div class="div88">Туапсе</div>
+    <div class="div89">Пенза</div>
+    <div class="div90">Владивосток</div>
+    <div class="div91">Анапа</div>
+
+    <img
+      class="_60-c-65978-f-7572-a-182124-ce-15-1"
+      src="_60-c-65978-f-7572-a-182124-ce-15-10.png"
+    />
+
+    <img
+      class="_70-fbf-975-f-892433-cac-86-f-1-e-3-d-5-ab-2-ec-4-1"
+      src="_70-fbf-975-f-892433-cac-86-f-1-e-3-d-5-ab-2-ec-4-10.png"
+    />
+
+    <img class="exterior-1" src="exterior-10.png" />
+    <img class="gamma-foto-otelya-7-1-1" src="gamma-foto-otelya-7-1-10.png"/>
+    <img class="building-1" src="building-10.png" />
+    <img class="caption-1" src="caption-10.png" />
+    </a>
+
+
+    
+
+    <div class="div25">
+      <div class="rectangle"></div>
+      <div class="frame">
+        <div class="frame2">
+          <div class="frame3"></div>
+          
+          <div
+            class="_7-7-495-123-45-67-info-paradisehotels-ru-www-paradisehotels-ru"
+          >
+            <span>
+              <span
+                class="_7-7-495-123-45-67-info-paradisehotels-ru-www-paradisehotels-ru-span"
+              >
+                Головной офис: Адрес: ул. Тверская, д. 7, Москва, Россия
+                <br />
+                Телефон: +7 (495) 123-45-67
+                <br />
+                Электронная почта: info@paradisehotels.ru
+                <br />
+                Официальный сайт:
+              </span>
+              <span
+                class="_7-7-495-123-45-67-info-paradisehotels-ru-www-paradisehotels-ru-span2"
+              >
+                www.paradisehotels.ru
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="frame4">
+          <div class="frame5">
+            <div class="div26">Отели и санатории</div>
+            <div class="frame6">
+              <div class="frame7">
+                <div class="div27">Москва</div>
+                <div class="div28">Анапа</div>
+                <div class="div29">Белокуриха</div>
+                <div class="div30">Воронеж</div>
+                <div class="div31">Екатеринбург</div>
+                <div class="div32">Железноводск</div>
+                <div class="div33">Калуга</div>
+                <div class="div34">Кемерово</div>
+                <div class="div35">Кисловодск</div>
+                <div class="div36">Лиски</div>
+                <div class="div37">Мурманск</div>
+                <div class="div38">Небуг</div>
+                <div class="div39">Новосибирск</div>
+                <div class="div40">Переславль</div>
+                <div class="div41">Ростов Великий</div>
+                <div class="div42">Светлогорск</div>
+                <div class="div43">Сочи</div>
+                <div class="div44">Туапсе</div>
+                <div class="div45">Тюмень</div>
+                <div class="div46">Ульяновск</div>
+                <div class="div47">Хабаровск</div>
+                <div class="div48">Якутск</div>
+                <div class="div49">Санкт-Петербург</div>
+                <div class="div50">Владивосток</div>
+                <div class="div51">Ессентуки</div>
+                <div class="div52">Каспийск</div>
+                <div class="div53">Кострома</div>
+                <div class="div54">Нальчик</div>
+                <div class="div55">Пенза</div>
+                <div class="div56">Саратов</div>
+                <div class="div57">Тобольск</div>
+                <div class="div58">Углич</div>
+                <div class="div59">Шадринск</div>
+                <div class="div60">Астрахань</div>
+                <div class="div61">Йошкар-Ола</div>
+                <div class="div62">Мирный</div>
+                <div class="div63">Роза Хутор</div>
+                <div class="div64">Тула</div>
+                <div class="div65">Ярославль</div>
+                <div class="div66">Геленджик</div>
+                <div class="div67">Нижний Новгород</div>
+                <div class="div68">Уфа</div>
+                <div class="div69">Сергиев Посад</div>
+                <div class="div70">Киров</div>
+              </div>
+              <div class="div71">Россия</div>
+            </div>
+          </div>
+          <div class="frame8">
+            <div class="div72">Компания</div>
+            <div class="frame9">
+              <div class="div73">Управление и франшиза</div>
+              <div class="div74">Спецпредложения</div>
+              <div class="div75">Контакты</div>
+              <div class="div76">Помощь</div>
+              <div class="div77">О нас</div>
+              <div class="div78">Мероприятия</div>
+              <div class="div79">Аренда помещений</div>
+              <div class="div80">Карьера</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="div81">© ООО «Парадайс Хотелс Компани»,</div>
+      <div class="frame10">
+        <div class="frame11">
+          <div class="image"></div>
+          <div class="frame12">
+            <div class="frame13">
+              <div class="div82">Бронирование отелей:</div>
+              <div class="_8-800-200-00-48">8 800 200 00 48</div>
+            </div>
+            <div class="frame14">
+              <div class="div83">Бронирование санаториев:</div>
+              <div class="_8-800-555-2-777">8 800 555 2 777</div>
+            </div>
+          </div>
+          <div class="paradise5">Paradise</div>
+          <div class="hotels">HOTELS</div>
+        </div>
+        <div class="div84">
+          Обратная связь
+          <br />
+        </div>
+        <div class="div85" id="konta">Контакты</div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <script>
+    // Функционал для выбора отеля
+    const dropdownHeader = document.getElementById('dropdownHeader');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    dropdownHeader.addEventListener('click', () => {
+      dropdownMenu.style.display =
+        dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    function selectItem(text) {
+      dropdownHeader.textContent = text;
+      dropdownMenu.style.display = 'none';
+    }
+
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach((tab) => {
+        tab.classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-button').forEach((button) => {
+        button.classList.remove('active');
+      });
+      document.querySelector(`button[onclick="showTab('${tabId}')"]`).classList.add('active');
+    }
+
+    // Функционал для календаря
+    const dateDropdownHeader = document.getElementById('dateDropdownHeader');
+    const dateDropdownMenu = document.getElementById('dateDropdownMenu');
+    const calendar = document.getElementById('calendar');
+    const currentMonthElement = document.getElementById('currentMonth');
+    const prevMonthButton = document.getElementById('prevMonth');
+    const nextMonthButton = document.getElementById('nextMonth');
+    const checkinDateElement = document.getElementById('checkinDate');
+    const checkoutDateElement = document.getElementById('checkoutDate');
+    const confirmDatesButton = document.getElementById('confirmDates');
+
+    let currentDate = new Date();
+    let checkinDate = null;
+    let checkoutDate = null;
+
+    dateDropdownHeader.addEventListener('click', () => {
+      dateDropdownMenu.style.display =
+        dateDropdownMenu.style.display === 'block' ? 'none' : 'block';
+      if (dateDropdownMenu.style.display === 'block') {
+        renderCalendar();
+      }
+    });
+
+    function renderCalendar() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      currentMonthElement.textContent = `${currentDate.toLocaleString('ru', { month: 'long' })} ${year}`;
+      
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      
+      calendar.innerHTML = '';
+      
+      // Добавляем дни недели
+      const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+      daysOfWeek.forEach(day => {
+        const dayElement = document.createElement('div');
+        dayElement.textContent = day;
+        dayElement.style.fontWeight = 'bold';
+        calendar.appendChild(dayElement);
+      });
+      
+      // Добавляем пустые ячейки для начала месяца
+      for (let i = 0; i < firstDay.getDay(); i++) {
+        const emptyElement = document.createElement('div');
+        calendar.appendChild(emptyElement);
+      }
+      
+      // Добавляем дни месяца
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayElement = document.createElement('div');
+        dayElement.textContent = day;
+        dayElement.dataset.date = `${year}-${month + 1}-${day}`;
+        
+        const date = new Date(year, month, day);
+        if (checkinDate && date.getTime() === checkinDate.getTime()) {
+          dayElement.classList.add('selected');
+        }
+        if (checkoutDate && date.getTime() === checkoutDate.getTime()) {
+          dayElement.classList.add('selected');
+        }
+        
+        dayElement.addEventListener('click', () => selectDate(date));
+        calendar.appendChild(dayElement);
+      }
+    }
+
+    function selectDate(date) {
+      if (!checkinDate || (checkinDate && checkoutDate)) {
+        checkinDate = date;
+        checkoutDate = null;
+      } else if (date > checkinDate) {
+        checkoutDate = date;
+      } else {
+        checkinDate = date;
+        checkoutDate = null;
+      }
+      
+      updateSelectedDates();
+      renderCalendar();
+    }
+
+    function updateSelectedDates() {
+      checkinDateElement.textContent = checkinDate ? checkinDate.toLocaleDateString('ru-RU') : 'Не выбрано';
+      checkoutDateElement.textContent = checkoutDate ? checkoutDate.toLocaleDateString('ru-RU') : 'Не выбрано';
+    }
+
+    prevMonthButton.addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      renderCalendar();
+    });
+
+    nextMonthButton.addEventListener('click', () => {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+      renderCalendar();
+    });
+
+    confirmDatesButton.addEventListener('click', () => {
+      if (checkinDate && checkoutDate) {
+        dateDropdownHeader.textContent = `${checkinDate.toLocaleDateString('ru-RU')} - ${checkoutDate.toLocaleDateString('ru-RU')}`;
+        dateDropdownMenu.style.display = 'none';
+      }
+    });
+
+    // Функционал для выбора гостей
+    const guestsDropdownHeader = document.getElementById('guestsDropdownHeader');
+    const guestsDropdownMenu = document.getElementById('guestsDropdownMenu');
+    const counterButtons = document.querySelectorAll('.counter-btn');
+    const childrenControl = document.getElementById('childrenControl');
+    const childrenSlider = document.getElementById('childrenSlider');
+    const childrenCountElement = document.getElementById('childrenCount');
+    const confirmGuestsButton = document.getElementById('confirmGuests');
+
+    let adultsCount = 1;
+    let childrenCount = 0;
+
+    guestsDropdownHeader.addEventListener('click', () => {
+      guestsDropdownMenu.style.display =
+        guestsDropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    counterButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const type = e.target.dataset.type;
+        const action = e.target.dataset.action;
+        
+        if (type === 'adults') {
+          if (action === 'increase') {
+            adultsCount++;
+          } else if (action === 'decrease' && adultsCount > 1) {
+            adultsCount--;
+          }
+          updateCounter('adults', adultsCount);
+        } else if (type === 'children') {
+          if (action === 'increase' && childrenCount < 12) {
+            childrenCount++;
+          } else if (action === 'decrease' && childrenCount > 0) {
+            childrenCount--;
+          }
+          updateCounter('children', childrenCount);
+        }
+        
+        updateGuestsHeader();
+        updateChildrenControl();
+      });
+    });
+
+    childrenSlider.addEventListener('input', (e) => {
+      childrenCount = parseInt(e.target.value);
+      childrenCountElement.textContent = childrenCount;
+      updateCounter('children', childrenCount);
+      updateGuestsHeader();
+    });
+
+    function updateCounter(type, count) {
+      const countElement = document.querySelector(`.count[data-type="${type}"]`);
+      const decreaseButton = document.querySelector(`.counter-btn[data-type="${type}"][data-action="decrease"]`);
+      
+      countElement.textContent = count;
+      decreaseButton.disabled = count === 0;
+    }
+
+    function updateChildrenControl() {
+      if (childrenCount > 0) {
+        childrenControl.classList.remove('hidden');
+        childrenSlider.value = childrenCount;
+        childrenCountElement.textContent = childrenCount;
+      } else {
+        childrenControl.classList.add('hidden');
+      }
+    }
+
+    function updateGuestsHeader() {
+      const totalGuests = adultsCount + childrenCount;
+      let guestText = '';
+      
+      if (totalGuests === 1) {
+        guestText = '1 Гость';
+      } else if (totalGuests >= 2 && totalGuests <= 4) {
+        guestText = `${totalGuests} Гостя`;
+      } else {
+        guestText = `${totalGuests} Гостей`;
+      }
+      
+      guestsDropdownHeader.textContent = guestText;
+    }
+
+    confirmGuestsButton.addEventListener('click', () => {
+      guestsDropdownMenu.style.display = 'none';
+    });
+
+    // Закрытие dropdown при клике вне их
+    window.onclick = function (event) {
+      if (!event.target.closest('.dropdown')) {
+        dropdownMenu.style.display = 'none';
+      }
+      if (!event.target.closest('.dropdown-date')) {
+        dateDropdownMenu.style.display = 'none';
+      }
+      if (!event.target.closest('.dropdown-guests')) {
+        guestsDropdownMenu.style.display = 'none';
+      }
+    };
+
+    // Инициализация
+    renderCalendar();
+    updateSelectedDates();
+    updateGuestsHeader();
+
+  </script>
+  
+</body>
+</html>
