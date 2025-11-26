@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бронирование - Paradise Hotels</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #2f180d 0%, #cf4f4f 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .booking-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      overflow: hidden;
+      max-width: 1000px;
+      width: 100%;
+      display: flex;
+      min-height: 600px;
+    }
+
+    .hotel-info {
+      flex: 1;
+      background: linear-gradient(135deg, #e68a45 0%, #ff6b6b 100%);
+      color: white;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .hotel-image {
+      width: 100%;
+      height: 200px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .hotel-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hotel-details h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .hotel-location {
+      font-size: 1.2em;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .amenities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .amenity {
+      background: rgba(255,255,255,0.2);
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+    }
+
+    .booking-form {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .form-title {
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .form-subtitle {
+      color: #666;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+      color: #333;
+      font-size: 0.9em;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #e4002b;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .room-type {
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .room-type:hover {
+      border-color: #e4002b;
+      transform: translateY(-2px);
+    }
+
+    .room-type.selected {
+      border-color: #e4002b;
+      background: #fff5f5;
+    }
+
+    .room-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .room-name {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .room-price {
+      color: #e4002b;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .room-features {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .total-price {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .total-amount {
+      font-size: 2em;
+      font-weight: bold;
+      color: #e4002b;
+    }
+
+    .book-btn {
+      background: linear-gradient(135deg, #e4002b 0%, #ff6b6b 100%);
+      color: white;
+      padding: 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s;
+      margin-top: 10px;
+    }
+
+    .book-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .back-btn:hover {
+      background: #5a6268;
+    }
+
+    @media (max-width: 768px) {
+      .booking-container {
+        flex-direction: column;
+      }
+      
+      .hotel-info {
+        order: 2;
+      }
+      
+      .booking-form {
+        order: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="booking-container">
+    <div class="hotel-info">
+      <div>
+        <a href="../index.html">
+          <img class="_79774-ea-0-51-ee-4-e-9-d-8992-2-f-8-caf-377628-transformed-1" src="_79774-ea-0-51-ee-4-e-9-d-8992-2-f-8-caf-377628-transformed-10.png" />
+        </a>
+
+        <div class="hotel-details">
+          <h1 id="hotelName">Отель</h1>
+          <div class="hotel-location" id="hotelLocation">Город, Страна</div>
+          <div class="hotel-description" id="hotelDescription">
+            Премиальный отель с высококлассным обслуживанием и всеми удобствами для комфортного проживания.
+          </div>
+          <div class="amenities">
+            <span class="amenity">Wi-Fi</span>
+            <span class="amenity">Бассейн</span>
+            <span class="amenity">SPA</span>
+            <span class="amenity">Ресторан</span>
+            <span class="amenity">Парковка</span>
+          </div>
+        </div>
+      </div>
+      <div class="contact-info">
+        <div>📞 +7 (495) 123-45-67</div>
+        <div>✉️ info@paradisehotels.ru</div>
+      </div>
+    </div>
+
+    <div class="booking-form">
+      <h2 class="form-title">Бронирование номера</h2>
+      <p class="form-subtitle">Заполните форму для подтверждения бронирования</p>
+
+      <div class="form-group">
+        <label for="city">Выберите город</label>
+        <select id="city" onchange="updateHotelInfo()">
+          <option value="Москва" >Москва</option>
+          <option value="Туапсе">Туапсе</option>
+          <option value="Пенза">Пенза</option>
+          <option value="Уфа">Уфа</option>
+          <option value="Владивосток">Владивосток</option>
+          <option value="Анапа">Анапа</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="checkin">Дата заезда</label>
+          <input type="date" id="checkin" required>
+        </div>
+        <div class="form-group">
+          <label for="checkout">Дата выезда</label>
+          <input type="date" id="checkout" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="adults">Взрослые</label>
+          <select id="adults">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="children">Дети</label>
+          <select id="children">
+            <option value="0" selected>Без детей</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Выберите тип номера</label>
+        <div class="room-type selected" onclick="selectRoom(this)">
+          <div class="room-header">
+            <span class="room-name">Стандартный номер</span>
+            <span class="room-price">₽4,500/ночь</span>
+          </div>
+          <div class="room-features">• Двуспальная кровать • Кондиционер • Телевизор • Ванная комната</div>
+        </div>
+        <div class="room-type" onclick="selectRoom(this)">
+          <div class="room-header">
+            <span class="room-name">Делюкс номер</span>
+            <span class="room-price">₽7,200/ночь</span>
+          </div>
+          <div class="room-features">• Двуспальная кровать • Гостиная зона • Мини-бар • Вид на город</div>
+        </div>
+        <div class="room-type" onclick="selectRoom(this)">
+          <div class="room-header">
+            <span class="room-name">Люкс</span>
+            <span class="room-price">₽12,000/ночь</span>
+          </div>
+          <div class="room-features">• Раздельные спальни • Гидромассажная ванна • Балкон • Премиум обслуживание</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fullName">ФИО</label>
+        <input type="text" id="fullName" placeholder="Иванов Иван Иванович" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="ivanov@example.com" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Телефон</label>
+          <input type="tel" id="phone" placeholder="+7 (999) 999-99-99" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="specialRequests">Особые пожелания</label>
+        <textarea id="specialRequests" rows="3" placeholder="Дополнительные пожелания к бронированию..."></textarea>
+      </div>
+
+      <div class="total-price">
+        <div>Общая стоимость:</div>
+        <div class="total-amount" id="totalAmount">₽0</div>
+        <div>за <span id="nightsCount">0</span> ночей</div>
+      </div>
+
+      <button class="book-btn" onclick="bookRoom()">Забронировать номер</button>
+      <a href="../index.html" class="back-btn">← Вернуться на главную</a>
+    </div>
+  </div>
+
+  <script>
+    // Данные об отелях
+    const hotels = {
+      'Москва': {
+        image: 'exterior-10.png',
+        location: 'Москва, Россия',
+        description: 'Премиальный отель в центре Москвы с видом на Кремль и современными удобствами.'
+      },
+      'Туапсе': {
+        image: 'building-10.png',
+        location: 'Туапсе, Россия',
+        description: 'Курортный отель на берегу Черного моря с частным пляжем и SPA-комплексом.'
+      },
+      'Пенза': {
+        image: 'caption-10.png',
+        location: 'Пенза, Россия',
+        description: 'Комфортабельный отель в историческом центре города с европейским сервисом.'
+      },
+      'Уфа': {
+        image: '_60-c-65978-f-7572-a-182124-ce-15-10.png',
+        location: 'Уфа, Россия',
+        description: 'Современный бизнес-отель с конференц-залами и фитнес-центром.'
+      },
+      'Владивосток': {
+        image: 'gamma-foto-otelya-7-1-10.png',
+        location: 'Владивосток, Россия',
+        description: 'Отель с панорамным видом на бухту Золотой Рог и японским морем.'
+      },
+      'Анапа': {
+        image: '_70-fbf-975-f-892433-cac-86-f-1-e-3-d-5-ab-2-ec-4-10.png',
+        location: 'Анапа, Россия',
+        description: 'Семейный курортный отель с аквапарком и анимационной программой.'
+      }
+    };
+
+    // Обновление информации об отеле
+    function updateHotelInfo() {
+      const selectedCity = document.getElementById('city').value;
+      const hotel = hotels[selectedCity];
+      
+      if (hotel) {
+        document.getElementById('hotelName').textContent = `Paradise Hotels ${selectedCity}`;
+        document.getElementById('hotelLocation').textContent = hotel.location;
+        document.getElementById('hotelDescription').textContent = hotel.description;
+        document.getElementById('hotelImage').src = hotel.image;
+        
+        // Сохраняем выбор в localStorage
+        localStorage.setItem('selectedHotel', selectedCity);
+      }
+    }
+
+    // Загрузка данных об отеле
+    document.addEventListener('DOMContentLoaded', function() {
+      const selectedHotel = localStorage.getItem('selectedHotel') || 'Москва';
+      const hotel = hotels[selectedHotel];
+      
+      // Устанавливаем выбранный город в селекторе
+      document.getElementById('city').value = selectedHotel;
+      
+      if (hotel) {
+        document.getElementById('hotelName').textContent = `Paradise Hotels ${selectedHotel}`;
+        document.getElementById('hotelLocation').textContent = hotel.location;
+        document.getElementById('hotelDescription').textContent = hotel.description;
+        document.getElementById('hotelImage').src = hotel.image;
+      }
+
+      // Установка дат по умолчанию
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      document.getElementById('checkin').valueAsDate = today;
+      document.getElementById('checkout').valueAsDate = tomorrow;
+      
+      calculateTotal();
+    });
+
+    // Выбор типа номера
+    function selectRoom(element) {
+      document.querySelectorAll('.room-type').forEach(room => {
+        room.classList.remove('selected');
+      });
+      element.classList.add('selected');
+      calculateTotal();
+    }
+
+    // Расчет общей стоимости
+    function calculateTotal() {
+      const checkin = new Date(document.getElementById('checkin').value);
+      const checkout = new Date(document.getElementById('checkout').value);
+      
+      // Проверка корректности дат
+      if (isNaN(checkin) || isNaN(checkout) || checkout <= checkin) {
+        document.getElementById('nightsCount').textContent = '0';
+        document.getElementById('totalAmount').textContent = '₽0';
+        return;
+      }
+      
+      const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+      
+      const selectedRoom = document.querySelector('.room-type.selected');
+      const priceText = selectedRoom.querySelector('.room-price').textContent;
+      const pricePerNight = parseInt(priceText.replace(/[^\d]/g, ''));
+      
+      const total = nights * pricePerNight;
+      
+      document.getElementById('nightsCount').textContent = nights;
+      document.getElementById('totalAmount').textContent = `₽${total.toLocaleString()}`;
+    }
+
+    // Обработка бронирования
+    function bookRoom() {
+      const formData = {
+        city: document.getElementById('city').value,
+        hotel: document.getElementById('hotelName').textContent,
+        checkin: document.getElementById('checkin').value,
+        checkout: document.getElementById('checkout').value,
+        adults: document.getElementById('adults').value,
+        children: document.getElementById('children').value,
+        room: document.querySelector('.room-type.selected .room-name').textContent,
+        fullName: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        specialRequests: document.getElementById('specialRequests').value,
+        total: document.getElementById('totalAmount').textContent
+      };
+
+      // Валидация формы
+      if (!formData.fullName || !formData.email || !formData.phone) {
+        alert('Пожалуйста, заполните все обязательные поля');
+        return;
+      }
+
+      // Проверка дат
+      const checkin = new Date(formData.checkin);
+      const checkout = new Date(formData.checkout);
+      if (checkout <= checkin) {
+        alert('Пожалуйста, выберите корректные даты заезда и выезда');
+        return;
+      }
+
+      // Здесь обычно отправка данных на сервер
+      alert(`Бронирование подтверждено!\n\nГород: ${formData.city}\nОтель: ${formData.hotel}\nДаты: ${formData.checkin} - ${formData.checkout}\nНомер: ${formData.room}\nСтоимость: ${formData.total}\n\nС вами свяжутся для подтверждения.`);
+    }
+
+    // Обновление стоимости при изменении дат
+    document.getElementById('checkin').addEventListener('change', calculateTotal);
+    document.getElementById('checkout').addEventListener('change', calculateTotal);
+    document.getElementById('city').addEventListener('change', calculateTotal);
+  </script>
+</body>
+</html>
