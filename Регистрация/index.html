@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Авторизация/регистрация</title>
+  <style>
+    :root {
+      --main-color: #0D131F;
+      --text-color: #ffffff;
+      --input-bg: rgba(255,255,255,0.08);
+      --input-focus: rgba(255,255,255,0.25);
+      --card-bg: rgba(0,0,0,0.35);
+      --link-color: black;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    #bgVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .container {
+      width: 380px;
+      height: 560px;
+      perspective: 1200px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.9s ease-in-out;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .container.active .card {
+      transform: rotateY(180deg);
+    }
+
+    .form {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 45px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--main-color);
+    }
+
+    .form h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      font-size: 26px;
+      color: var(--main-color);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    }
+
+    .form input {
+      width: 100%;
+      padding: 14px 15px;
+      margin: 10px 0;
+      border: none;
+      outline: none;
+      border-radius: 10px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 15px;
+      transition: background 0.3s;
+    }
+
+    .form input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .form input:focus {
+      background: var(--input-focus);
+    }
+
+    .form button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--main-color), var(--main-color));
+      color: var(--text-color);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .options input {
+      margin-right: 6px;
+    }
+
+    .options a {
+      color: var(--link-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .options a:hover {
+      text-decoration: underline;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+    }
+
+    .toggle span {
+      color: var(--link-color);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .signup {
+      transform: rotateY(180deg);
+    }
+    .logo {
+      width: 8%;
+      height: 11.6%;
+      position: absolute;
+      right: 79.5%;
+      left: 14.07%;
+      top: 0.5%;
+      object-fit: cover;
+    }
+
+    /* Стили для валидации */
+    .error-message {
+      color: #ff6b6b;
+      font-size: 12px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      font-weight: 500;
+      display: block;
+    }
+
+    .success-message {
+      color: #4ecdc4;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      background: rgba(78, 205, 196, 0.1);
+    }
+
+    .form input.error {
+      border: 2px solid #ff6b6b !important;
+    }
+
+    .form input.success {
+      border: 2px solid #4ecdc4 !important;
+    }
+
+    .form button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .form button:disabled:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Анимация для успешной валидации */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    .form input.success {
+      animation: pulse 0.3s ease-in-out;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop id="bgVideo">
+    <source src="img/fondo.mp4" type="video/mp4">
+    Ваш браузер не поддерживает видео.
+  </video>
+
+  <div class="container" id="authBox">
+    <div class="card">
+      <div class="form login">
+        <h2>Авторизоваться</h2>
+        <div class="input-wrapper">
+          <input type="email" id="loginEmail" placeholder="Почта" required>
+        </div>
+        <div class="input-wrapper">
+          <input type="password" id="loginPassword" placeholder="Пароль" required>
+        </div>
+        <div class="options">
+          <label><input type="checkbox"> Запомнить</label>
+          <a href="#"> Забыли пароль?</a>
+        </div>
+        <button id="loginButton">Вход</button>
+        <div class="toggle">Ещё нет аккаунта? <span onclick="toggleForm()">Регистрация</span></div>
+      </div>
+
+      <div class="form signup">
+        <h2>Создание аккаунта</h2>
+        <div class="input-wrapper">
+          <input type="text" id="signupName" placeholder="Имя" required>
+        </div>
+        <div class="input-wrapper">
+          <input type="email" id="signupEmail" placeholder="Почта" required>
+        </div>
+        <div class="input-wrapper">
+          <input type="tel" id="signupPhone" placeholder="Телефон" required>
+        </div>
+        <div class="input-wrapper">
+          <input type="password" id="signupPassword" placeholder="Пароль" required>
+        </div>
+        <button id="signupButton">Регистрация</button>
+        <div class="toggle">Уже есть аккаунт? <span onclick="toggleForm()">Вход</span></div>
+      </div>
+    </div>
+  </div>
+  
+  <a href="../index.html">
+    <img class="logo" src="лого.png" alt="Логотип">
+  </a>
+
+  <script>
+    const authBox = document.getElementById('authBox');
+    
+    function toggleForm() {
+      authBox.classList.toggle('active');
+    }
+
+    // Валидация форм
+    document.addEventListener('DOMContentLoaded', function() {
+      // Форма входа
+      const loginEmail = document.getElementById('loginEmail');
+      const loginPassword = document.getElementById('loginPassword');
+      const loginButton = document.getElementById('loginButton');
+      const loginForm = document.querySelector('.login');
+
+      // Форма регистрации
+      const signupName = document.getElementById('signupName');
+      const signupEmail = document.getElementById('signupEmail');
+      const signupPhone = document.getElementById('signupPhone');
+      const signupPassword = document.getElementById('signupPassword');
+      const signupButton = document.getElementById('signupButton');
+      const signupForm = document.querySelector('.signup');
+
+      // Функции валидации
+      function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
+
+      function validatePassword(password) {
+        return password.length >= 6;
+      }
+
+      function validateName(name) {
+        return name.trim().length >= 2;
+      }
+
+      function validatePhone(phone) {
+        // Убираем все пробелы для проверки
+        const cleanPhone = phone.replace(/\s/g, '');
+        // Проверяем формат: +7 и 10 цифр после (всего 12 символов)
+        return /^\+7\d{10}$/.test(cleanPhone);
+      }
+
+      // Форматирование телефона
+      function formatPhone(input) {
+        let value = input.value.replace(/\D/g, ''); // Убираем все нецифры
+        
+        // Если пользователь начинает ввод с 9, добавляем +7
+        if (value.startsWith('9') && !input.value.includes('+7')) {
+          value = '7' + value;
+        }
+        
+        // Если номер начинается с 7 или 8, заменяем на +7
+        if ((value.startsWith('7') || value.startsWith('8')) && !input.value.includes('+7')) {
+          value = '7' + value.substring(1);
+        }
+        
+        // Ограничиваем длину до 11 цифр (без +)
+        if (value.length > 11) {
+          value = value.substring(0, 11);
+        }
+        
+        // Форматируем в вид: +7 937 123 45 67
+        let formattedValue = '+7';
+        if (value.length > 1) {
+          formattedValue += ' ' + value.substring(1, 4);
+        }
+        if (value.length > 4) {
+          formattedValue += ' ' + value.substring(4, 7);
+        }
+        if (value.length > 7) {
+          formattedValue += ' ' + value.substring(7, 9);
+        }
+        if (value.length > 9) {
+          formattedValue += ' ' + value.substring(9, 11);
+        }
+        
+        return formattedValue;
+      }
+
+      // Функции показа ошибок
+      function showError(input, message) {
+        // Удаляем старую ошибку если есть
+        hideError(input);
+        
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        
+        input.parentNode.insertBefore(errorDiv, input.nextSibling);
+        input.classList.add('error');
+        input.classList.remove('success');
+      }
+
+      function hideError(input) {
+        const existingError = input.parentNode.querySelector('.error-message');
+        if (existingError) {
+          existingError.remove();
+        }
+      }
+
+      function showSuccess(input) {
+        hideError(input);
+        input.classList.add('success');
+        input.classList.remove('error');
+      }
+
+      function showSuccessMessage(form, message) {
+        // Удаляем старое сообщение если есть
+        const existingMessage = form.querySelector('.success-message');
+        if (existingMessage) {
+          existingMessage.remove();
+        }
+        
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = message;
+        
+        const button = form.querySelector('button');
+        form.insertBefore(successDiv, button.nextSibling);
+        
+        // Автоматически скрыть сообщение через 3 секунды
+        setTimeout(() => {
+          successDiv.remove();
+        }, 3000);
+      }
+
+      // Валидация в реальном времени для формы входа
+      loginEmail.addEventListener('input', function() {
+        if (loginEmail.value.trim() === '') {
+          hideError(loginEmail);
+          loginEmail.classList.remove('error', 'success');
+        } else if (!validateEmail(loginEmail.value)) {
+          showError(loginEmail, 'Введите корректный email');
+        } else {
+          showSuccess(loginEmail);
+        }
+      });
+
+      loginPassword.addEventListener('input', function() {
+        if (loginPassword.value.trim() === '') {
+          hideError(loginPassword);
+          loginPassword.classList.remove('error', 'success');
+        } else if (!validatePassword(loginPassword.value)) {
+          showError(loginPassword, 'Пароль должен содержать минимум 6 символов');
+        } else {
+          showSuccess(loginPassword);
+        }
+      });
+
+      // Валидация в реальном времени для формы регистрации
+      signupName.addEventListener('input', function() {
+        if (signupName.value.trim() === '') {
+          hideError(signupName);
+          signupName.classList.remove('error', 'success');
+        } else if (!validateName(signupName.value)) {
+          showError(signupName, 'Имя должно содержать минимум 2 символа');
+        } else {
+          showSuccess(signupName);
+        }
+      });
+
+      signupEmail.addEventListener('input', function() {
+        if (signupEmail.value.trim() === '') {
+          hideError(signupEmail);
+          signupEmail.classList.remove('error', 'success');
+        } else if (!validateEmail(signupEmail.value)) {
+          showError(signupEmail, 'Введите корректный email');
+        } else {
+          showSuccess(signupEmail);
+        }
+      });
+
+      // Форматирование и валидация телефона
+      signupPhone.addEventListener('input', function(e) {
+        const formattedPhone = formatPhone(e.target);
+        e.target.value = formattedPhone;
+        
+        if (signupPhone.value.trim() === '' || signupPhone.value === '+7') {
+          hideError(signupPhone);
+          signupPhone.classList.remove('error', 'success');
+        } else if (!validatePhone(signupPhone.value)) {
+          showError(signupPhone, 'Введите корректный номер телефона (10 цифр после +7)');
+        } else {
+          showSuccess(signupPhone);
+        }
+      });
+
+      // Обработка клавиш для телефона (чтобы можно было удалять)
+      signupPhone.addEventListener('keydown', function(e) {
+        // Разрешаем Backspace и Delete даже если курсор в начале
+        if (e.key === 'Backspace' || e.key === 'Delete') {
+          const selectionStart = e.target.selectionStart;
+          const selectionEnd = e.target.selectionEnd;
+          
+          // Если пытаются удалить "+7", блокируем
+          if (selectionStart <= 2 && selectionEnd <= 2) {
+            e.preventDefault();
+            return;
+          }
+        }
+      });
+
+      signupPassword.addEventListener('input', function() {
+        if (signupPassword.value.trim() === '') {
+          hideError(signupPassword);
+          signupPassword.classList.remove('error', 'success');
+        } else if (!validatePassword(signupPassword.value)) {
+          showError(signupPassword, 'Пароль должен содержать минимум 6 символов');
+        } else {
+          showSuccess(signupPassword);
+        }
+      });
+
+      // Обработчики отправки форм
+      loginButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        let isValid = true;
+        const errors = [];
+        
+        // Валидация email
+        if (!validateEmail(loginEmail.value)) {
+          showError(loginEmail, 'Введите корректный email');
+          isValid = false;
+          errors.push('email');
+        } else {
+          showSuccess(loginEmail);
+        }
+        
+        // Валидация пароля
+        if (!validatePassword(loginPassword.value)) {
+          showError(loginPassword, 'Пароль должен содержать минимум 6 символов');
+          isValid = false;
+          errors.push('password');
+        } else {
+          showSuccess(loginPassword);
+        }
+        
+        if (isValid) {
+          // Здесь можно добавить отправку данных на сервер
+          showSuccessMessage(loginForm, 'Вход выполнен успешно!');
+          // loginForm.submit(); // Раскомментировать для реальной отправки
+        } else if (errors.length > 0) {
+          // Фокусируемся на первом поле с ошибкой
+          if (errors.includes('email')) {
+            loginEmail.focus();
+          } else if (errors.includes('password')) {
+            loginPassword.focus();
+          }
+        }
+      });
+
+      signupButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        let isValid = true;
+        const errors = [];
+        
+        // Валидация имени
+        if (!validateName(signupName.value)) {
+          showError(signupName, 'Имя должно содержать минимум 2 символа');
+          isValid = false;
+          errors.push('name');
+        } else {
+          showSuccess(signupName);
+        }
+        
+        // Валидация email
+        if (!validateEmail(signupEmail.value)) {
+          showError(signupEmail, 'Введите корректный email');
+          isValid = false;
+          errors.push('email');
+        } else {
+          showSuccess(signupEmail);
+        }
+        
+        // Валидация телефона
+        if (!validatePhone(signupPhone.value)) {
+          showError(signupPhone, 'Введите корректный номер телефона (10 цифр после +7)');
+          isValid = false;
+          errors.push('phone');
+        } else {
+          showSuccess(signupPhone);
+        }
+        
+        // Валидация пароля
+        if (!validatePassword(signupPassword.value)) {
+          showError(signupPassword, 'Пароль должен содержать минимум 6 символов');
+          isValid = false;
+          errors.push('password');
+        } else {
+          showSuccess(signupPassword);
+        }
+        
+        if (isValid) {
+          // Здесь можно добавить отправку данных на сервер
+          showSuccessMessage(signupForm, 'Регистрация выполнена успешно!');
+          // signupForm.submit(); // Раскомментировать для реальной отправки
+        } else if (errors.length > 0) {
+          // Фокусируемся на первом поле с ошибкой
+          if (errors.includes('name')) {
+            signupName.focus();
+          } else if (errors.includes('email')) {
+            signupEmail.focus();
+          } else if (errors.includes('phone')) {
+            signupPhone.focus();
+          } else if (errors.includes('password')) {
+            signupPassword.focus();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
